@@ -1,0 +1,55 @@
+---
+title: "91 Percent"
+description: "Close to Home/ Homeward Bound: the Story of Utah’s Forgotten Homeless"
+author: "Andrew Fronce"
+date: "9/02/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+```
+
+  Any frequent visitor of the Gateway Mall in downtown Salt Lake City has likely seen signs of a serious problem. Scattered throughout the area are panhandlers, shopping carts full of belongings, and forlorn, sunburned individuals seeking relief from the hot summer sun. A permanent fixture around the old Rio Grande station, Salt Lake’s homeless population raises questions for the city, such as how to combat the high crime rate in the Rio Grande neighborhood while also helping this vulnerable demographic.
+  
+  In 2005, the Utah state government set an ambitious goal: an end to chronic homelessness. Ten years later, after pouring vast resources and man hours into a solution, the state proclaimed victory and national news ran headlines declaring that Utah had reduced chronic homelessness by [91 percent](http://www.npr.org/2015/12/10/459100751/utah-reduced-chronic-homelessness-by-91-percent-heres-how).  The key to Salt Lake’s success lay in providing inexpensive housing for the homeless, as well as accurately matching persons to the right facilities and programs. However, more than a decade later, despite this success, there are still thousands of people in the city without a place to sleep at night. What went wrong? How is it that success could be declared when there is still so very clearly a sizeable problem? 
+  
+  The answer can be found within how ["chronic homelessness"](https://jobs.utah.gov/housing/scso/documents/homelessness2016.pdf) is defined. According to the official state definition, in order for a person to be considered chronically homeless, they must have been homeless for a year or longer, or subject to four separate occasions of homelessness within the last three years. However, in addition to these criteria, that person must also have a disability. 
+
+  Under these parameters, minors who meet these conditions aren’t counted as part of the chronically homeless population. Neither are homeless adults who do not have a disability, regardless of how long it’s been since they’ve had a roof over their heads. While focusing on helping the chronically homeless is admirable, as they’re arguably the most at-risk demographic, what’s being done about the larger portion of the people living on the streets of Salt Lake City?
+
+  Unfortunately, requests to obtain homelessness data from the Mayor’s office and the Salt Lake County Health Department proved to be unsuccessful. However, some very valuable information was provided by the Rescue Mission of Salt Lake, which distributes a [monthly newsletter](http://www.rescuesaltlake.org/about/newsletters) sharing several important statistics. The “nights of shelter provided” statistic is particularly useful, as it gives a rough idea of just how many people are sheltered there each night.
+
+  
+  
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+old_df <- read_csv("rescuemissiondata.csv")
+cols <- c('Month', 'Meals', 'Nights', 'ClothingGiven')
+names(old_df) <- cols
+
+# Data wrangling
+old_df <- old_df %>% 
+  mutate(Month = case_when(Month == "12/1" ~ "12/2016",
+                           TRUE ~ Month))
+
+old_df <- old_df %>% 
+  separate(Month, c("Month", "Year"), sep = "/") %>% 
+  mutate(day = 1,
+         date = make_date(Year, Month, day))
+
+ggplot(old_df, aes(x = date, y = Nights)) +
+  geom_line() +
+  labs(x = "Date",
+       y = "Nights Stayed") + ggtitle('Nights of Shelter Provided by Rescue Mission of Salt Lake') + theme_minimal()
+```
+  
+  From November 2013 through June 2017, the Rescue Mission of Salt Lake housed (on average)  148 people per night, every night, and there’s no indication that the shelter has become any less busy over the years. Keep in mind that this is just one of several shelters in downtown Salt Lake, many of which are also filled to capacity every night. In total, the number of homeless individuals in Salt Lake City is still extremely large. In fact, nearly [14,000](http://www.deseretnews.com/article/865678779/Is-Utah-still-a-model-for-solving-chronic-homelessness.html) homeless individuals had contact with the state’s homeless services in 2016.
+  
+  It is a huge step in the right direction that hundreds of disabled, homeless adults have been able to find a new lease on life thanks to the efforts of the state government. However, perhaps the focus should now be placed upon  aiding the much larger portion of this disadvantaged population. Of course, several challenges arise when planning to tackle such a difficult task: how to provide funding for housing, where to build the facilities, how new residents will be able to afford rent, and crime prevention in those new developments. There’s also the oft-overlooked fact that some people are simply more comfortable living on the streets after having been there for so long.
+  
+  Although it would be an enormous task, the same steps taken to help the chronically homeless may also work for the general homeless population as well. Ultimately, it boils down to whether or not the state and those living in it choose to dedicate the necessary resources to solving this problem. There are certainly many hurdles to overcome, but for as worthy a goal as this, the results will be worth the effort.
+  
+  
+  
